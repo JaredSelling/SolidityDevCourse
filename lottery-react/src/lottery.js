@@ -33,7 +33,10 @@ const abi = [
   {
     inputs: [],
     name: 'getPlayers',
-    outputs: [ [Object] ],
+    outputs: [ {
+      "name": "",
+      "type": "address[]"
+    } ],
     stateMutability: 'view',
     type: 'function',
     constant: true,
