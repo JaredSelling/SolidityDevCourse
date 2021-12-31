@@ -11,19 +11,36 @@ let factory;
 let campaignAddress;
 let campaign;
 
-beforeEach(async() => {
-  accounts = web3.eth.getAccounts();
-  factory = await new web3.eth.Contract(JSON.parse(compiledFactory.abi))
-    .deploy({data: compiledFactory.bytecode})
-    .send({from: accounts[0], gas: '1000000'});
 
+beforeEach(async() => {
+  accounts = await web3.eth.getAccounts();
+  web3.eth.getBalance(accounts[0]).then(console.log);
+
+  const estimatedGas = await web3.eth.estimateGas({from: accounts[0]});
+  const accountBalance = await web3.eth.getBalance(accounts[0]);
+
+  // Create factory to generate campaigns
+  factory = await new web3.eth.Contract(compiledFactory.abi)
+    .deploy({data: compiledFactory.evm.bytecode.object})
+    .send({from: accounts[0], gas: '3000000'});
+
+  // Create campaign from our factory
   await factory.methods.createCampaign('100').send({
     from: accounts[0],
     gas: '1000000'
   });
 
+  // Store the address of our deployed campaign
   [campaignAddress] = await factory.methods.getDeployedCampaigns().call();
 
-  campaign = await new web3.eth.Contract(JSON.parse(compiledCampaign.abi), campaignAddress);
-  
+  // Create a contract instance from our deployed campaign on the blockchain
+  campaign = await new web3.eth.Contract(compiledCampaign.abi, campaignAddress);
+
+});
+
+describe('Campaigns', () => {
+  it('deploys a factory and a campaign', () => {
+    assert.ok(factory.options.address);
+    assert.ok(campaign.options.address);
+  });
 });
