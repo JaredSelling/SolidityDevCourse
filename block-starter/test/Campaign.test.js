@@ -14,10 +14,6 @@ let campaign;
 
 beforeEach(async() => {
   accounts = await web3.eth.getAccounts();
-  web3.eth.getBalance(accounts[0]).then(console.log);
-
-  const estimatedGas = await web3.eth.estimateGas({from: accounts[0]});
-  const accountBalance = await web3.eth.getBalance(accounts[0]);
 
   // Create factory to generate campaigns
   factory = await new web3.eth.Contract(compiledFactory.abi)
@@ -43,4 +39,63 @@ describe('Campaigns', () => {
     assert.ok(factory.options.address);
     assert.ok(campaign.options.address);
   });
+
+  it('Makes caller as the campaign manager', async () => {
+    const manager = await campaign.methods.manager().call();
+    assert.equal(accounts[0], manager);
+  });
+
+  it('Allows contributers to donate and become approvers', async () => {
+    await campaign.methods.contribute().send({from: accounts[1], gas: '3000000', value: '200 '});
+    const isContributor = await campaign.methods.approvers(accounts[1]).call();
+    assert(isContributor);
+  });
+
+  it('enforces minimum contribution', async () => {
+    try {
+      await campaign.methods.contribute().send({from: accounts[1], value: '5'});
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
+  });
+
+  it('allows manager to create spending request', async () => {
+    await campaign.methods
+      .createSpendingRequest('Test spending request', 1000, accounts[1])
+      .send({from: accounts[0], gas: 3000000 });
+
+    const request = await campaign.methods.requests(0).call();
+
+    assert.equal('Test spending request', request.description);
+  });
+
+  it('processes requests', async() => {
+
+    const originalBalance = await web3.eth.getBalance(accounts[1]);
+
+    await campaign.methods
+      .contribute()
+      .send({value: web3.utils.toWei('10', 'ether'), from: accounts[0]});
+
+    await campaign.methods
+      .createSpendingRequest('Create NFT assets', web3.utils.toWei('5', 'ether'), accounts[1])
+      .send({from: accounts[0], gas: 3000000});
+
+    await campaign.methods
+      .approveRequest(0)
+      .send({from: accounts[0], gas: 3000000});
+
+    await campaign.methods
+      .finalizeRequest(0)
+      .send({from: accounts[0], gas: 3000000});
+
+    isRequestApproved = await campaign.methods.requests(0).call();
+
+    assert(isRequestApproved);
+
+    const finalBalance = await web3.eth.getBalance(accounts[1]);
+    assert.equal((finalBalance - originalBalance), web3.utils.toWei('5', 'ether'));
+  });
+
 });
