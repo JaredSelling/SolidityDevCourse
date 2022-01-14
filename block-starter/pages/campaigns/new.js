@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Layout from '../../components/Layout';
-import { Form, Button, Container, Input, Message } from 'semantic-ui-react';
+import { Form, Button, Container, Input, Message, Icon } from 'semantic-ui-react';
 import factoryInstance from '../../ethereum/factory';
 import web3 from '../../ethereum/web3';
 
@@ -8,11 +8,13 @@ import web3 from '../../ethereum/web3';
 class CampaignNew extends Component {
   state = {
     minimumContribution: '',
-    errorMessage: ''
+    errorMessage: '',
+    loading: false
   };
 
   onSubmit = async (event) => {
     event.preventDefault();
+    this.setState({loading: true, errorMessage: ''});
     try {
       const accounts = await web3.eth.getAccounts();
       await factoryInstance.methods
@@ -23,7 +25,7 @@ class CampaignNew extends Component {
     } catch(error) {
       this.setState({errorMessage: error.message});
     }
-
+    this.setState({loading: false});
   };
 
 
@@ -48,7 +50,7 @@ class CampaignNew extends Component {
                 header="There was an error with your submission"
                 content={this.state.errorMessage}
               />
-              <Button type='submit' primary>Create</Button>
+              <Button type='submit' primary loading={this.state.loading}>Create</Button>
             </Form>
           </Layout>
         </Container>
