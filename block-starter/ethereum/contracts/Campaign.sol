@@ -70,6 +70,20 @@ contract Campaign {
         request.complete = true;
     }
 
+    function getSummary() public view returns(uint, uint, uint, uint, address) {
+      return (
+        minContribution,
+        address(this).balance,
+        requests.length,
+        numApprovers,
+        manager
+      );
+    }
+
+    function getRequestsCount() public view returns(uint) {
+      return requests.length;
+    }
+
     modifier restricted() {
         require(msg.sender == manager);
         _;
