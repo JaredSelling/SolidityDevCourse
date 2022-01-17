@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import Layout from '../../components/Layout';
-import { Card, Container } from 'semantic-ui-react';
+import { Card, Container, Form, Input, Button, Grid } from 'semantic-ui-react';
 import routes from '../../routes';
 import web3 from '../../ethereum/web3';
 import getCampaign from '../../ethereum/campaign';
+import ContributeForm from '../../components/ContributeForm';
 
 
 class CampaignShow extends Component {
@@ -60,7 +61,17 @@ class CampaignShow extends Component {
       <Container>
         <Layout>
           <h3>Campaign Details</h3>
-          <Card.Group items={this.renderCards()} />
+          <Grid>
+            <Grid.Column width={10}>
+              <Card.Group items={this.renderCards()} />
+            </Grid.Column>
+            <Grid.Column width={6}>
+              <ContributeForm></ContributeForm>
+            </Grid.Column>
+          </Grid>
+
+
+
         </Layout>
       </Container>
     );
