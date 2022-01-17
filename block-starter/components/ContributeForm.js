@@ -16,7 +16,7 @@ class ContributeForm extends Component {
 
     const campaign = getCampaign(this.props.address);
     try {
-      this.setState({loading: true});
+      this.setState({loading: true, errorMessage: false});
       const accounts = await web3.eth.getAccounts();
       await campaign.methods.contribute().send({
         value: web3.utils.toWei(this.state.value, 'ether'),
