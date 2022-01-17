@@ -5,6 +5,7 @@ import routes from '../../routes';
 import web3 from '../../ethereum/web3';
 import getCampaign from '../../ethereum/campaign';
 import ContributeForm from '../../components/ContributeForm';
+import { Link } from '../../routes';
 
 
 class CampaignShow extends Component {
@@ -62,17 +63,31 @@ class CampaignShow extends Component {
       <Container>
         <Layout>
           <h3>Campaign Details</h3>
+
           <Grid>
-            <Grid.Column width={10}>
-              <Card.Group items={this.renderCards()} />
-            </Grid.Column>
-            <Grid.Column width={6}>
-              <ContributeForm address={this.props.address}></ContributeForm>
-            </Grid.Column>
+
+            <Grid.Row>
+              <Grid.Column width={10}>
+                <Card.Group items={this.renderCards()} />
+              </Grid.Column>
+              <Grid.Column width={6}>
+                <ContributeForm address={this.props.address}></ContributeForm>
+              </Grid.Column>
+            </Grid.Row>
+
+            <Grid.Row>
+              <Grid.Column width={10}>
+                <Link route={`/campaigns/${this.props.address}/requests`}>
+                  <a>
+                    <Button primary>
+                      View Requests
+                    </Button>
+                  </a>
+                </Link>
+              </Grid.Column>
+            </Grid.Row>
+
           </Grid>
-
-
-
         </Layout>
       </Container>
     );
