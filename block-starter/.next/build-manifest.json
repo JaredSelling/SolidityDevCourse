@@ -25,6 +25,11 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/campaigns/new": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/campaigns/new.js"
+    ],
     "/campaigns/requests": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -34,6 +39,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/campaigns/requests/new.js"
+    ],
+    "/campaigns/show": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/campaigns/show.js"
     ]
   },
   "ampFirstPages": []

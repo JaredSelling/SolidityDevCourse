@@ -3,14 +3,36 @@ import Layout from '../../../components/Layout';
 import {Container, Table, Grid, Button } from 'semantic-ui-react';
 import getCampaign from '../../../ethereum/campaign';
 import { Link } from '../../../routes';
+import RequestRow from '../../../components/RequestRow';
 
 
 class RequestIndex extends Component {
   static async getInitialProps(props) {
     const address = props.query.address;
-    // const requests = campaign.methods.requests().call();
-    // console.log(requests);
-    return {address: address};
+    const campaign = getCampaign(address);
+    const requestsCount = await campaign.methods.getRequestsCount().call();
+    const numApprovers = await campaign.methods.numApprovers().call();
+
+    const requests = await Promise.all(
+      Array(parseInt(requestsCount))
+        .fill()
+        .map((element, index) => {
+          return campaign.methods.requests(index).call()
+        })
+    );
+    return {address, requests, requestsCount, numApprovers};
+  }
+
+  renderRow() {
+    return this.props.requests.map((request, index) => {
+      return <RequestRow
+        request={request}
+        id={index}
+        key={index}
+        address={this.props.address}
+        numApprovers={this.props.numApprovers}
+      />;
+    });
   }
 
   render() {
@@ -37,15 +59,7 @@ class RequestIndex extends Component {
             </Table.Header>
 
             <Table.Body>
-              <Table.Row>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-              </Table.Row>
+              {this.renderRow()}
             </Table.Body>
 
           </Table>

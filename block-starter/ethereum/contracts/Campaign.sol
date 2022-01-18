@@ -29,7 +29,7 @@ contract Campaign {
     address public manager;
     mapping(address => bool) public approvers;
     uint public minContribution;
-    uint numApprovers;
+    uint public numApprovers;
     Request[] public requests;
 
     constructor(uint minimum, address creator) {
